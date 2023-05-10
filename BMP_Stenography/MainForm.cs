@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,25 @@ namespace BMP_Stenography
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            List<ComboItem> comboItems = new List<ComboItem>
+            {
+               new ComboItem { Id = 1, Text = "starts" },
+                 new ComboItem { Id = 2, Text = "circles" },
+                   new ComboItem { Id = 3, Text = "rectangles" },
+                     new ComboItem { Id = 4, Text = "starts2" },
+                       new ComboItem { Id = 5, Text = "lines" },
+                         new ComboItem { Id = 6, Text = "rectangles2" },
+            };
+            templateComboBox.DataSource = comboItems;
 
+            comboItems = new List<ComboItem>
+            {
+               new ComboItem { Id = 1, Text = "yellow" },
+                new ComboItem { Id = 2, Text = "green" },
+                 new ComboItem { Id = 3, Text = "silver" },
+
+            };
+            colorComboBox.DataSource = comboItems;
         }
 
         private void uploadButton_Click(object sender, EventArgs e)
@@ -105,7 +124,16 @@ namespace BMP_Stenography
         }
         private void createButton_Click(object sender, EventArgs e)
         {
-            GetImage();
+            try
+            {
+                GetImage();
+
+            }
+            catch (IOException ex)
+            {
+
+                MessageBox.Show("Save to another file: " + ex.Message);
+            }
         }
         private void GetImage()
         {
@@ -126,7 +154,7 @@ namespace BMP_Stenography
                 byte[] imageData = (byte[])command.ExecuteScalar();
 
                 // create a new memory stream and write the image data to it
-               string str= createNegativeImage(imageData);
+                string str = createNegativeImage(imageData);
                 LoadChangedImage(str);
                 _conn.Close();
             }
@@ -134,7 +162,13 @@ namespace BMP_Stenography
         private string createNegativeImage(byte[] inputFileData)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            int colorCombinationType, colorDependenceType = colorCombinationType = 1;
+
+            ComboItem selectedComboItem = (ComboItem)colorComboBox.SelectedItem;
+            int colorCombinationType = selectedComboItem.Id;
+
+             selectedComboItem = (ComboItem)templateComboBox.SelectedItem;
+            int colorDependenceType = selectedComboItem.Id;
+
             using (var fin = new MemoryStream(inputFileData)) // using MemoryStream instead of FileStream to read the input file data
             using (var fout = new FileStream($"Image_{DateTime.Now.ToString("yyyy - MM - dd HH_mm_ss")}.bmp", FileMode.Create, FileAccess.Write))
             {
@@ -179,13 +213,43 @@ namespace BMP_Stenography
                             pixels[index].g = (byte)(((x * y) * 255 * 255) / 65535);
                             pixels[index].b = (byte)0;
                         }
-                        else
+                        else if (colorDependenceType == 2)
                         {
-                            // Third color dependence type
-                            pixels[index].r = (byte)(255 - pixels[index].r);
-                            pixels[index].g = (byte)(255 - pixels[index].g);
-                            pixels[index].b = (byte)(255 - pixels[index].b);
+                            // First color dependence type
+                            pixels[index].r = (byte)0;
+                            pixels[index].g = (byte)(((x * y) * 255 * 255) / Math.Sqrt(width + height * 10000));
+                            pixels[index].b = (byte)0;
+
                         }
+                        else if (colorDependenceType == 3)
+                        {
+                            // First color dependence type
+                            pixels[index].r = (byte)0;
+                            pixels[index].g = (byte)(((x * y) * 255 * 255) / (width + 1 * 10));
+                            pixels[index].b = (byte)0;
+                        }
+                        else if (colorDependenceType == 4)
+                        {
+                            // First color dependence type
+                            pixels[index].r = (byte)0;
+                            pixels[index].g = (byte)(((index % width + 1) * (x ^ y) + Math.Sqrt(width ^ height)));
+                            pixels[index].b = (byte)0;
+                        }
+                        else if (colorDependenceType == 5)
+                        {
+                            // First color dependence type
+                            pixels[index].r = (byte)0;
+                            pixels[index].g = (byte)(((x + y) * 255 * 3.14159265358979));
+                            pixels[index].b = (byte)0;
+                        }
+                        else if (colorDependenceType == 6)
+                        {
+                            // First color dependence type
+                            pixels[index].r = (byte)0;
+                            pixels[index].g = (byte)((x ^ y) * 255 / ((width + height) / 2));
+                            pixels[index].b = (byte)0;
+                        }
+
                     }
                 }
 
@@ -198,14 +262,20 @@ namespace BMP_Stenography
                         pixels[i].r ^= pixels[i].g;
                     }
                 }
-                else
+                else if (colorCombinationType ==2)
                 {
-                    // Third color combination type
+                    // First color combination type
                     for (int i = 0; i < pixels.Length; i++)
                     {
-                        pixels[i].r ^= pixels[i].b;
-                        pixels[i].b ^= pixels[i].r;
-                        pixels[i].r ^= pixels[i].b;
+                        pixels[i].g ^= pixels[i].b;
+                    }
+                }
+                else if (colorCombinationType == 3)
+                {
+                    // First color combination type
+                    for (int i = 0; i < pixels.Length; i++)
+                    {
+                        pixels[i].r ^= pixels[i].b^=pixels[i].g;
                     }
                 }
 
@@ -216,13 +286,13 @@ namespace BMP_Stenography
                     fout.WriteByte(pixels[i].g);
                     fout.WriteByte(pixels[i].r);
                 }
-            
 
 
 
-            // Save the final pixel data to a file using a SaveFileDialog
 
-            saveFileDialog.Filter = "Bitmap Image|*.bmp";
+                // Save the final pixel data to a file using a SaveFileDialog
+
+                saveFileDialog.Filter = "Bitmap Image|*.bmp";
                 saveFileDialog.Title = "Save Negative Image As...";
                 saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -241,9 +311,9 @@ namespace BMP_Stenography
 
                 }
             }
-                       return saveFileDialog.FileName;
-                    
-           
+            return saveFileDialog.FileName;
+
+
         }
         private void LoadChangedImage(string str)
         {
@@ -252,7 +322,7 @@ namespace BMP_Stenography
                 Bitmap bmp = new Bitmap(str);
                 createPictureBox.Image = bmp;
             }
-            }
+        }
     }
 }
 
