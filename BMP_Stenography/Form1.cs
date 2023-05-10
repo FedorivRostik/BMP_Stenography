@@ -35,7 +35,7 @@ namespace BMP_Stenography
                     user.Password = passwordTextBox.Text;
                     user.Id = Convert.ToInt16(dataTable.Rows[0]["id"]);
                     MainForm mainForm = new MainForm(user,conn);
-
+                    conn.Close();
                     mainForm.Show();
 
                     this.Hide();

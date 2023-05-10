@@ -48,6 +48,9 @@ namespace BMP_Stenography
 
             };
             colorComboBox.DataSource = comboItems;
+
+
+            UpdateImagePictureBox();
         }
 
         private void uploadButton_Click(object sender, EventArgs e)
@@ -73,7 +76,7 @@ namespace BMP_Stenography
                 string query = "INSERT INTO [image] (title, image,user_id) VALUES (@ImageName, @ImageData,@UserId)";
 
                 // Create a SqlConnection object to connect to the database
-
+                _conn.Open();
                 // Create a SqlCommand object to execute the query
                 SqlCommand command = new SqlCommand(query, _conn);
 
@@ -91,7 +94,7 @@ namespace BMP_Stenography
                 SqlParameter UserId = new SqlParameter("@UserId", SqlDbType.Int);
                 UserId.Value = _user.Id;
                 command.Parameters.Add(UserId);
-
+                _conn.Close();
                 try
                 {
                     // Open the database connection
@@ -109,6 +112,7 @@ namespace BMP_Stenography
                         // Set the Image property of the PictureBox control to the Image object
                         pictureBox.Image = image;
                     }
+                    _conn.Close();
                 }
                 catch (Exception ex)
                 {
@@ -120,6 +124,49 @@ namespace BMP_Stenography
                     // Close the database connection
                     _conn.Close();
                 }
+
+                try
+                {
+                    _conn.Open();
+                    // create a SqlCommand object with a SELECT statement
+                    command = new SqlCommand("SELECT Id FROM [image] WHERE user_id = @UserId", _conn);
+
+                    // add a parameter for the UserId
+                    command.Parameters.AddWithValue("@UserId", _user.Id);
+
+
+
+                    // create a SqlDataReader object
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    // loop through the results and add each ID to a list
+                    List<int> ids = new List<int>();
+                    while (reader.Read())
+                    {
+                        int id = (int)reader["Id"];
+                        ids.Add(id);
+                    }
+                    ids = ids.OrderByDescending(x => x).Take(3).ToList();
+                    List<ComboItem> comboItems = new List<ComboItem>
+            {
+               new ComboItem { Id = ids[0], Text = "image 1" },
+                new ComboItem { Id = ids[1], Text = "image 2"  },
+                 new ComboItem { Id = ids[2], Text = "image 3" },
+
+            };
+                    imageComboBox.DataSource = comboItems;
+                    // close the reader and the connection
+                    reader.Close();
+                    _conn.Close();
+                    imageComboBox.SelectedIndex = 0;
+
+                }
+                catch (Exception)
+                {
+                }
+                finally { _conn.Close(); }
+
+                UpdateImagePictureBox();
             }
         }
         private void createButton_Click(object sender, EventArgs e)
@@ -139,16 +186,17 @@ namespace BMP_Stenography
         {
             // connection string to the MSSQL database
             string sqlQuery = "SELECT image FROM [image] WHERE Id = @Id;";
-            int imageId = 3;
+            ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
+            int imageId = selectedComboItem.Id;
             // create a new SQL connection and command objects
-
+            _conn.Open();
             using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
             {
                 // add the ID parameter to the command object
                 command.Parameters.AddWithValue("@Id", imageId);
 
                 // open the connection to the database
-                _conn.Open();
+
 
                 // execute the SQL command and retrieve the image data as a byte array
                 byte[] imageData = (byte[])command.ExecuteScalar();
@@ -166,7 +214,7 @@ namespace BMP_Stenography
             ComboItem selectedComboItem = (ComboItem)colorComboBox.SelectedItem;
             int colorCombinationType = selectedComboItem.Id;
 
-             selectedComboItem = (ComboItem)templateComboBox.SelectedItem;
+            selectedComboItem = (ComboItem)templateComboBox.SelectedItem;
             int colorDependenceType = selectedComboItem.Id;
 
             using (var fin = new MemoryStream(inputFileData)) // using MemoryStream instead of FileStream to read the input file data
@@ -262,7 +310,7 @@ namespace BMP_Stenography
                         pixels[i].r ^= pixels[i].g;
                     }
                 }
-                else if (colorCombinationType ==2)
+                else if (colorCombinationType == 2)
                 {
                     // First color combination type
                     for (int i = 0; i < pixels.Length; i++)
@@ -275,7 +323,7 @@ namespace BMP_Stenography
                     // First color combination type
                     for (int i = 0; i < pixels.Length; i++)
                     {
-                        pixels[i].r ^= pixels[i].b^=pixels[i].g;
+                        pixels[i].r ^= pixels[i].b ^= pixels[i].g;
                     }
                 }
 
@@ -286,9 +334,6 @@ namespace BMP_Stenography
                     fout.WriteByte(pixels[i].g);
                     fout.WriteByte(pixels[i].r);
                 }
-
-
-
 
                 // Save the final pixel data to a file using a SaveFileDialog
 
@@ -321,6 +366,116 @@ namespace BMP_Stenography
             {
                 Bitmap bmp = new Bitmap(str);
                 createPictureBox.Image = bmp;
+            }
+        }
+
+        private void imageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
+            int imageId = selectedComboItem.Id;
+            // create a SqlCommand object with a SELECT statement
+            SqlCommand command = new SqlCommand("SELECT image FROM [image] WHERE Id = @Id", _conn);
+
+            // add a parameter for the picture ID
+            command.Parameters.AddWithValue("@Id", imageId);
+
+            // open the connection
+            try
+            {
+                _conn.Open();
+                byte[] imageData = (byte[])command.ExecuteScalar();
+
+                // close the connection
+
+                // create a MemoryStream object from the image data
+                using (MemoryStream stream = new MemoryStream(imageData))
+                {
+
+                    // create an Image object from the MemoryStream
+                    Image image = Image.FromStream(stream);
+
+                    // display the image in a PictureBox control
+                    selectedPicture.Image = image;
+                }
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                _conn.Close();
+            }
+
+
+        }
+
+        private void UpdateImagePictureBox()
+        {
+            _conn.Open();
+            // create a SqlCommand object with a SELECT statement
+            SqlCommand command = new SqlCommand("SELECT Id FROM [image] WHERE user_id = @UserId", _conn);
+
+            // add a parameter for the UserId
+            command.Parameters.AddWithValue("@UserId", _user.Id);
+
+
+            // create a SqlDataReader object
+            SqlDataReader reader = command.ExecuteReader();
+
+            // loop through the results and add each ID to a list
+            List<int> ids = new List<int>();
+            while (reader.Read())
+            {
+                int id = (int)reader["Id"];
+                ids.Add(id);
+            }
+            ids = ids.OrderByDescending(x => x).Take(3).ToList();
+            List<ComboItem> comboItems = new List<ComboItem>
+            {
+               new ComboItem { Id = ids[0], Text = "image 1" },
+                new ComboItem { Id = ids[1], Text = "image 2"  },
+                 new ComboItem { Id = ids[2], Text = "image 3" },
+
+            };
+            imageComboBox.DataSource = comboItems;
+            // close the reader and the connection
+            reader.Close();
+            _conn.Close();
+
+            ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
+            int imageId = selectedComboItem.Id;
+            // create a SqlCommand object with a SELECT statement
+            command = new SqlCommand("SELECT image FROM [image] WHERE Id = @Id", _conn);
+
+            // add a parameter for the picture ID
+            command.Parameters.AddWithValue("@Id", imageId);
+
+            // open the connection
+            try
+            {
+                _conn.Open();
+                byte[] imageData = (byte[])command.ExecuteScalar();
+
+                // close the connection
+
+                // create a MemoryStream object from the image data
+                using (MemoryStream stream = new MemoryStream(imageData))
+                {
+
+                    // create an Image object from the MemoryStream
+                    Image image = Image.FromStream(stream);
+
+                    // display the image in a PictureBox control
+                    selectedPicture.Image = image;
+                }
+                _conn.Close();
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                _conn.Close();
             }
         }
     }

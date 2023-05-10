@@ -34,7 +34,7 @@
             this.createButton = new System.Windows.Forms.Button();
             this.imageComboBox = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.selectedPicture = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.colorComboBox = new System.Windows.Forms.ComboBox();
@@ -46,7 +46,7 @@
             this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.createPictureBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.selectedPicture)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox
@@ -107,6 +107,7 @@
             this.imageComboBox.Name = "imageComboBox";
             this.imageComboBox.Size = new System.Drawing.Size(121, 29);
             this.imageComboBox.TabIndex = 9;
+            this.imageComboBox.SelectedIndexChanged += new System.EventHandler(this.imageComboBox_SelectedIndexChanged);
             // 
             // button1
             // 
@@ -120,15 +121,15 @@
             this.button1.Text = "Create";
             this.button1.UseVisualStyleBackColor = false;
             // 
-            // pictureBox1
+            // selectedPicture
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.DarkRed;
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(262, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(300, 300);
-            this.pictureBox1.TabIndex = 10;
-            this.pictureBox1.TabStop = false;
+            this.selectedPicture.BackColor = System.Drawing.Color.DarkRed;
+            this.selectedPicture.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.selectedPicture.Location = new System.Drawing.Point(262, 3);
+            this.selectedPicture.Name = "selectedPicture";
+            this.selectedPicture.Size = new System.Drawing.Size(300, 300);
+            this.selectedPicture.TabIndex = 10;
+            this.selectedPicture.TabStop = false;
             // 
             // label2
             // 
@@ -239,7 +240,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(1186, 353);
+            this.ClientSize = new System.Drawing.Size(1186, 347);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
@@ -250,7 +251,7 @@
             this.Controls.Add(this.colorComboBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.selectedPicture);
             this.Controls.Add(this.imageComboBox);
             this.Controls.Add(this.createButton);
             this.Controls.Add(this.createPictureBox);
@@ -261,7 +262,7 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.createPictureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.selectedPicture)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -275,7 +276,7 @@
         private System.Windows.Forms.Button createButton;
         private System.Windows.Forms.ComboBox imageComboBox;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox selectedPicture;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox colorComboBox;
