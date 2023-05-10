@@ -30,7 +30,10 @@
         {
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.uploadButton = new System.Windows.Forms.Button();
+            this.createPictureBox = new System.Windows.Forms.PictureBox();
+            this.createButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.createPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox
@@ -56,18 +59,44 @@
             this.uploadButton.UseVisualStyleBackColor = false;
             this.uploadButton.Click += new System.EventHandler(this.uploadButton_Click);
             // 
+            // createPictureBox
+            // 
+            this.createPictureBox.BackColor = System.Drawing.Color.DarkRed;
+            this.createPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.createPictureBox.Location = new System.Drawing.Point(182, 12);
+            this.createPictureBox.Name = "createPictureBox";
+            this.createPictureBox.Size = new System.Drawing.Size(300, 300);
+            this.createPictureBox.TabIndex = 7;
+            this.createPictureBox.TabStop = false;
+            // 
+            // createButton
+            // 
+            this.createButton.BackColor = System.Drawing.Color.Brown;
+            this.createButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.createButton.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.createButton.Location = new System.Drawing.Point(182, 318);
+            this.createButton.Name = "createButton";
+            this.createButton.Size = new System.Drawing.Size(300, 30);
+            this.createButton.TabIndex = 8;
+            this.createButton.Text = "Create";
+            this.createButton.UseVisualStyleBackColor = false;
+            this.createButton.Click += new System.EventHandler(this.createButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.createButton);
+            this.Controls.Add(this.createPictureBox);
             this.Controls.Add(this.uploadButton);
             this.Controls.Add(this.pictureBox);
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.createPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -76,5 +105,7 @@
 
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.Button uploadButton;
+        private System.Windows.Forms.PictureBox createPictureBox;
+        private System.Windows.Forms.Button createButton;
     }
 }
