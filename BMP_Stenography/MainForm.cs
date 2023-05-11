@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
@@ -127,38 +128,7 @@ namespace BMP_Stenography
 
                 try
                 {
-                    _conn.Open();
-                    // create a SqlCommand object with a SELECT statement
-                    command = new SqlCommand("SELECT Id FROM [image] WHERE user_id = @UserId", _conn);
-
-                    // add a parameter for the UserId
-                    command.Parameters.AddWithValue("@UserId", _user.Id);
-
-
-
-                    // create a SqlDataReader object
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    // loop through the results and add each ID to a list
-                    List<int> ids = new List<int>();
-                    while (reader.Read())
-                    {
-                        int id = (int)reader["Id"];
-                        ids.Add(id);
-                    }
-                    ids = ids.OrderByDescending(x => x).Take(3).ToList();
-                    List<ComboItem> comboItems = new List<ComboItem>
-            {
-               new ComboItem { Id = ids[0], Text = "image 1" },
-                new ComboItem { Id = ids[1], Text = "image 2"  },
-                 new ComboItem { Id = ids[2], Text = "image 3" },
-
-            };
-                    imageComboBox.DataSource = comboItems;
-                    // close the reader and the connection
-                    reader.Close();
-                    _conn.Close();
-                    imageComboBox.SelectedIndex = 0;
+                    UpdateImagePictureBox();
 
                 }
                 catch (Exception)
@@ -166,7 +136,7 @@ namespace BMP_Stenography
                 }
                 finally { _conn.Close(); }
 
-                UpdateImagePictureBox();
+                
             }
         }
         private void createButton_Click(object sender, EventArgs e)
@@ -430,53 +400,318 @@ namespace BMP_Stenography
                 ids.Add(id);
             }
             ids = ids.OrderByDescending(x => x).Take(3).ToList();
-            List<ComboItem> comboItems = new List<ComboItem>
+            List<ComboItem> comboItems = new List<ComboItem>();
+            if (ids.Count > 0)
             {
-               new ComboItem { Id = ids[0], Text = "image 1" },
-                new ComboItem { Id = ids[1], Text = "image 2"  },
-                 new ComboItem { Id = ids[2], Text = "image 3" },
-
-            };
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    comboItems.Add(new ComboItem { Id = ids[i], Text = $"image {ids[i]}" });
+                }
+            }
             imageComboBox.DataSource = comboItems;
             // close the reader and the connection
             reader.Close();
             _conn.Close();
 
             ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
+            if (selectedComboItem != null)
+            {
+                int imageId = selectedComboItem.Id;
+                // create a SqlCommand object with a SELECT statement
+                command = new SqlCommand("SELECT image FROM [image] WHERE Id = @Id", _conn);
+
+                // add a parameter for the picture ID
+                command.Parameters.AddWithValue("@Id", imageId);
+
+                // open the connection
+                try
+                {
+                    _conn.Open();
+                    byte[] imageData = (byte[])command.ExecuteScalar();
+
+                    // close the connection
+
+                    // create a MemoryStream object from the image data
+                    using (MemoryStream stream = new MemoryStream(imageData))
+                    {
+
+                        // create an Image object from the MemoryStream
+                        Image image = Image.FromStream(stream);
+
+                        // display the image in a PictureBox control
+                        selectedPicture.Image = image;
+                    }
+                    _conn.Close();
+                }
+                catch (Exception)
+                {
+                }
+                finally
+                {
+                    _conn.Close();
+                }
+            }
+        }
+
+        private void codeButton_Click(object sender, EventArgs e)
+        {
+            string str = "";
+            string sqlQuery = "SELECT image FROM [image] WHERE Id = @Id;";
+            ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
             int imageId = selectedComboItem.Id;
-            // create a SqlCommand object with a SELECT statement
-            command = new SqlCommand("SELECT image FROM [image] WHERE Id = @Id", _conn);
+            // create a new SQL connection and command objects
+            _conn.Open();
+            using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
+            {
+                // add the ID parameter to the command object
+                command.Parameters.AddWithValue("@Id", imageId);
 
-            // add a parameter for the picture ID
-            command.Parameters.AddWithValue("@Id", imageId);
+                // open the connection to the database
 
-            // open the connection
+
+                // execute the SQL command and retrieve the image data as a byte array
+                byte[] imageData = (byte[])command.ExecuteScalar();
+               str=  StoreMessageInBmp(imageData, messageTextbox.Text);
+
+                LoadChangedImage(str);
+                // create a new memory stream and write the image data to it
+
+                _conn.Close();
+            }
+
+
+
+
+            byte[] fileData = File.ReadAllBytes(str);
+
+            // Define the SQL query to insert the image into the table
+            string query = "INSERT INTO [image] (title, image,user_id) VALUES (@ImageName, @ImageData,@UserId)";
+
+            // Create a SqlConnection object to connect to the database
+            _conn.Open();
+            // Create a SqlCommand object to execute the query
+            SqlCommand commandd = new SqlCommand(query, _conn);
+
+            // Create a SqlParameter object for the image name parameter
+            SqlParameter imageNameParam = new SqlParameter("@ImageName", SqlDbType.VarChar);
+
+            imageNameParam.Value = $"Image - {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}.bmp";
+            commandd.Parameters.Add(imageNameParam);
+
+            // Create a SqlParameter object for the image data parameter
+            SqlParameter imageDataParam = new SqlParameter("@ImageData", SqlDbType.Image);
+            imageDataParam.Value = fileData;
+            commandd.Parameters.Add(imageDataParam);
+
+            SqlParameter UserId = new SqlParameter("@UserId", SqlDbType.Int);
+            UserId.Value = _user.Id;
+            commandd.Parameters.Add(UserId);
+            _conn.Close();
             try
             {
+                // Open the database connection
                 _conn.Open();
-                byte[] imageData = (byte[])command.ExecuteScalar();
 
-                // close the connection
-
-                // create a MemoryStream object from the image data
-                using (MemoryStream stream = new MemoryStream(imageData))
+                // Execute the query to insert the image into the table
+                commandd.ExecuteNonQuery();
+                // Display a success message
+                MessageBox.Show("Image saved successfully.");
+                using (MemoryStream ms = new MemoryStream(fileData))
                 {
+                    // Use the FromStream method of the Image class to create an Image object from the MemoryStream
+                    Image image = Image.FromStream(ms);
 
-                    // create an Image object from the MemoryStream
-                    Image image = Image.FromStream(stream);
-
-                    // display the image in a PictureBox control
-                    selectedPicture.Image = image;
+                    // Set the Image property of the PictureBox control to the Image object
+                    pictureBox.Image = image;
                 }
                 _conn.Close();
+            }
+            catch (Exception ex)
+            {
+                // Display an error message
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                // Close the database connection
+                _conn.Close();
+            }
+
+            try
+            {
+                UpdateImagePictureBox();
+
             }
             catch (Exception)
             {
             }
-            finally
+            finally { _conn.Close(); }
+        }
+
+
+
+
+        private int GetMaxMessageSize(byte[] imageData)
+        {
+            // Open the BMP file
+            using (var ms = new MemoryStream(imageData))
+            using (var bmp = new Bitmap(ms))
             {
+                // Calculate the maximum message size in bytes
+                int maxMessageBytes = bmp.Width * bmp.Height * 3 / 8;
+                return maxMessageBytes;
+            }
+        }
+
+        private string StoreMessageInBmp(byte[] imageData, string message)
+        {
+            using (var ms = new MemoryStream(imageData))
+            using (var bmp = new Bitmap(ms))
+            {
+                string stopSequence = "0000000000000000";
+                if (string.IsNullOrEmpty(message)) message = "emptyOrNull";
+
+                int maxMessageSize = GetMaxMessageSize(imageData);
+                if (message.Length + stopSequence.Length > maxMessageSize)
+                {
+                    MessageBox.Show("File is too small");
+                    return string.Empty;
+                }
+
+                byte[] messageBytes = Encoding.ASCII.GetBytes(message);
+                string binaryMessage = "";
+                foreach (byte b in messageBytes)
+                {
+                    binaryMessage += Convert.ToString(b, 2).PadLeft(8, '0');
+                }
+
+                binaryMessage += stopSequence;
+
+                // Embed the message in the image
+                int index = 0;
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    for (int x = 0; x < bmp.Width; x++)
+                    {
+                        Color pixel = bmp.GetPixel(x, y);
+                        if (index < binaryMessage.Length)
+                        {
+                            //note: binaryMessage contains only 0 and 1
+                            int red = pixel.R & 0xFE | (binaryMessage[index++] - '0');
+                            int green = pixel.G & 0xFE | (index < binaryMessage.Length ? binaryMessage[index++] - '0' : 0);
+                            int blue = pixel.B & 0xFE | (index < binaryMessage.Length ? binaryMessage[index++] - '0' : 0);
+                            bmp.SetPixel(x, y, Color.FromArgb(pixel.A, red, green, blue));
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    if (index >= binaryMessage.Length)
+                    {
+                        break;
+                    }
+                }
+
+                // Save the modified BMP file
+                using (var saveDialog = new SaveFileDialog())
+                {
+                    saveDialog.Filter = "Bitmap files (*.bmp)|*.bmp";
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        using (var outputMs = new MemoryStream())
+                        {
+                            bmp.Save(outputMs, ImageFormat.Bmp);
+                            File.WriteAllBytes(saveDialog.FileName, outputMs.ToArray());
+                        }
+                    }
+                    return saveDialog.FileName;
+                }
+            }
+        }
+
+        private void decodeButton_Click(object sender, EventArgs e)
+        {
+            string str = "";
+            string sqlQuery = "SELECT image FROM [image] WHERE Id = @Id;";
+            ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
+            int imageId = selectedComboItem.Id;
+            // create a new SQL connection and command objects
+            _conn.Open();
+            using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
+            {
+                // add the ID parameter to the command object
+                command.Parameters.AddWithValue("@Id", imageId);
+
+                // open the connection to the database
+
+
+                // execute the SQL command and retrieve the image data as a byte array
+                byte[] imageData = (byte[])command.ExecuteScalar();
+                 ReadMessageFromBmp(imageData);
+
+                // create a new memory stream and write the image data to it
+
                 _conn.Close();
             }
+        }
+
+        private void ReadMessageFromBmp(byte[] filePath)
+        {
+            // Open the BMP file
+            Bitmap bmp;
+            using (var ms = new MemoryStream(filePath))
+            {
+                bmp = new Bitmap(ms);
+            }
+
+            string stopSequence = "0000000000000000";
+
+            // Read the message from the image
+            string binaryMessage = "";
+            for (int y = 0; y < bmp.Height; y++)
+            {
+                for (int x = 0; x < bmp.Width; x++)
+                {
+                    Color pixel = bmp.GetPixel(x, y);
+                    int redBit = pixel.R & 0x01;
+                    int greenBit = pixel.G & 0x01;
+                    int blueBit = pixel.B & 0x01;
+                    binaryMessage += redBit.ToString() + greenBit.ToString() + blueBit.ToString();
+                    if (binaryMessage.EndsWith(stopSequence))
+                    {
+                        break;
+                    }
+                }
+                if (binaryMessage.EndsWith(stopSequence))
+                {
+                    break;
+                }
+            }
+
+            // Remove the stop sequence from the binary message
+            binaryMessage = binaryMessage.Substring(0, binaryMessage.Length - stopSequence.Length);
+
+            // Pad the binary message with zeroes to make its length a multiple of 8
+            // It may contain additional zeroes at the end since we were adding 0 to bmp if binaryMessage was out of chars (line 60,61)
+            int paddingLength = 8 - binaryMessage.Length % 8;
+            for (int i = 0; i < paddingLength; i++)
+            {
+                binaryMessage += "0";
+            }
+
+            // Convert the binary message to ASCII
+            List<byte> messageBytes = new List<byte>();
+            for (int i = 0; i < binaryMessage.Length; i += 8)
+            {
+                string byteString = binaryMessage.Substring(i, 8);
+                messageBytes.Add(Convert.ToByte(byteString, 2));
+            }
+            decodeTextBox.Text = Encoding.ASCII.GetString(messageBytes.ToArray());
+
+            bmp.Dispose();
+
+            
         }
     }
 }

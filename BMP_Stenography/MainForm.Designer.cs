@@ -33,17 +33,18 @@
             this.createPictureBox = new System.Windows.Forms.PictureBox();
             this.createButton = new System.Windows.Forms.Button();
             this.imageComboBox = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.codeButton = new System.Windows.Forms.Button();
             this.selectedPicture = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.colorComboBox = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.templateComboBox = new System.Windows.Forms.ComboBox();
-            this.loginTextBox = new System.Windows.Forms.TextBox();
+            this.decodeTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.messageTextbox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.decodeButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.createPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.selectedPicture)).BeginInit();
@@ -109,17 +110,18 @@
             this.imageComboBox.TabIndex = 9;
             this.imageComboBox.SelectedIndexChanged += new System.EventHandler(this.imageComboBox_SelectedIndexChanged);
             // 
-            // button1
+            // codeButton
             // 
-            this.button1.BackColor = System.Drawing.Color.Brown;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.Location = new System.Drawing.Point(262, 309);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(300, 30);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "Create";
-            this.button1.UseVisualStyleBackColor = false;
+            this.codeButton.BackColor = System.Drawing.Color.Brown;
+            this.codeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.codeButton.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.codeButton.Location = new System.Drawing.Point(144, 309);
+            this.codeButton.Name = "codeButton";
+            this.codeButton.Size = new System.Drawing.Size(112, 30);
+            this.codeButton.TabIndex = 11;
+            this.codeButton.Text = "Code";
+            this.codeButton.UseVisualStyleBackColor = false;
+            this.codeButton.Click += new System.EventHandler(this.codeButton_Click);
             // 
             // selectedPicture
             // 
@@ -190,50 +192,63 @@
             this.templateComboBox.Size = new System.Drawing.Size(121, 29);
             this.templateComboBox.TabIndex = 19;
             // 
-            // loginTextBox
+            // decodeTextBox
             // 
-            this.loginTextBox.BackColor = System.Drawing.Color.Maroon;
-            this.loginTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.loginTextBox.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.loginTextBox.ForeColor = System.Drawing.Color.Black;
-            this.loginTextBox.Location = new System.Drawing.Point(17, 309);
-            this.loginTextBox.Name = "loginTextBox";
-            this.loginTextBox.ReadOnly = true;
-            this.loginTextBox.Size = new System.Drawing.Size(239, 29);
-            this.loginTextBox.TabIndex = 21;
+            this.decodeTextBox.BackColor = System.Drawing.Color.Maroon;
+            this.decodeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.decodeTextBox.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.decodeTextBox.ForeColor = System.Drawing.Color.Black;
+            this.decodeTextBox.Location = new System.Drawing.Point(17, 262);
+            this.decodeTextBox.Name = "decodeTextBox";
+            this.decodeTextBox.ReadOnly = true;
+            this.decodeTextBox.Size = new System.Drawing.Size(239, 29);
+            this.decodeTextBox.TabIndex = 21;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label1.ForeColor = System.Drawing.Color.DarkRed;
-            this.label1.Location = new System.Drawing.Point(51, 208);
+            this.label1.Location = new System.Drawing.Point(53, 184);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(172, 20);
             this.label1.TabIndex = 22;
             this.label1.Text = "Write message to code";
             // 
-            // textBox1
+            // messageTextbox
             // 
-            this.textBox1.BackColor = System.Drawing.Color.Maroon;
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textBox1.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox1.ForeColor = System.Drawing.Color.Black;
-            this.textBox1.Location = new System.Drawing.Point(17, 231);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(239, 29);
-            this.textBox1.TabIndex = 23;
+            this.messageTextbox.BackColor = System.Drawing.Color.Maroon;
+            this.messageTextbox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.messageTextbox.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.messageTextbox.ForeColor = System.Drawing.Color.Black;
+            this.messageTextbox.Location = new System.Drawing.Point(17, 207);
+            this.messageTextbox.Name = "messageTextbox";
+            this.messageTextbox.Size = new System.Drawing.Size(239, 29);
+            this.messageTextbox.TabIndex = 23;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label4.ForeColor = System.Drawing.Color.DarkRed;
-            this.label4.Location = new System.Drawing.Point(74, 283);
+            this.label4.Location = new System.Drawing.Point(74, 239);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(115, 20);
             this.label4.TabIndex = 24;
             this.label4.Text = "Decoded value";
+            // 
+            // decodeButton
+            // 
+            this.decodeButton.BackColor = System.Drawing.Color.Brown;
+            this.decodeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.decodeButton.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.decodeButton.Location = new System.Drawing.Point(17, 309);
+            this.decodeButton.Name = "decodeButton";
+            this.decodeButton.Size = new System.Drawing.Size(112, 30);
+            this.decodeButton.TabIndex = 25;
+            this.decodeButton.Text = "Decode";
+            this.decodeButton.UseVisualStyleBackColor = false;
+            this.decodeButton.Click += new System.EventHandler(this.decodeButton_Click);
             // 
             // MainForm
             // 
@@ -241,16 +256,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(1186, 347);
+            this.Controls.Add(this.decodeButton);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.messageTextbox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.loginTextBox);
+            this.Controls.Add(this.decodeTextBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.templateComboBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.colorComboBox);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.codeButton);
             this.Controls.Add(this.selectedPicture);
             this.Controls.Add(this.imageComboBox);
             this.Controls.Add(this.createButton);
@@ -275,16 +291,17 @@
         private System.Windows.Forms.PictureBox createPictureBox;
         private System.Windows.Forms.Button createButton;
         private System.Windows.Forms.ComboBox imageComboBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button codeButton;
         private System.Windows.Forms.PictureBox selectedPicture;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox colorComboBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox templateComboBox;
-        private System.Windows.Forms.TextBox loginTextBox;
+        private System.Windows.Forms.TextBox decodeTextBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox messageTextbox;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button decodeButton;
     }
 }
