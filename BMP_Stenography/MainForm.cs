@@ -871,11 +871,10 @@ namespace BMP_Stenography
                     decodeTextBox.Text = "Message not found";
                 }
             }
-            string message = Encoding.ASCII.GetString(messageBytes.ToArray());
-
-            bmp.Dispose();
 
             decodeTextBox.Text = Encoding.ASCII.GetString(messageBytes.ToArray());
+            bmp.Dispose();
+
 
 
         }
