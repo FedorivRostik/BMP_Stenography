@@ -125,5 +125,22 @@ namespace BMP_Stenography
             if (checkBox1.Checked) { passwordTextBox.UseSystemPasswordChar = false; }
             else { passwordTextBox.UseSystemPasswordChar = true; }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Це форма входу.\nЗаповніть текстбокст і увійдіть в систему або нажміть на рейстрацію там заповніть поля, і увійдіть в систему.\n\n Як увійдете в систему побачите дропбокси" +
+                "їх 3 штуки перший пустий доки ви не додасте зображення і там будуть відображуватися 3 останніх зображення.\n є 3 комірки для зображень: перша для вибраного зображеня яке в базі дані," +
+                " друге - створеного темплейта, або закодованого зображення і 3 для останнього завантаженного зображення.\nЄ поле для вводу і кодування зображення і поле для виведу розкодованого зображення");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Проект створенно в навчальних цілях Командою \"T\'amilyan and Two Musketeers(Simpos,Patrickos)\"");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Створила команда \"T\'amilyan and Two Musketeers(Simpos,Patrickos)\" до складу входять 3 студента(Їх іменна не розголошуються,але можна сказати що Вони є студентами групи КН-32(2023))");
+        }
     }
 }
