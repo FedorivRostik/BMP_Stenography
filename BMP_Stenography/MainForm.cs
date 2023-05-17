@@ -52,6 +52,25 @@ namespace BMP_Stenography
 
 
             UpdateImagePictureBox();
+            if (_conn.State != ConnectionState.Open)
+            {
+
+                _conn.Open();
+
+            }
+            string query = $"SELECT * FROM [user] WHERE id='{_user.Id}'";
+            SqlDataAdapter sda = new SqlDataAdapter(query, _conn);
+
+            DataTable dataTable = new DataTable();
+            sda.Fill(dataTable);
+
+            if (dataTable.Rows.Count > 0)
+            {
+              
+                 Convert.ToInt16(dataTable.Rows[0]["id"]);
+            }
+            colorComboBox.SelectedIndex = Convert.ToInt16(dataTable.Rows[0]["color"])-1;
+            templateComboBox.SelectedIndex = Convert.ToInt16(dataTable.Rows[0]["template"])-1;
         }
 
         private void uploadButton_Click(object sender, EventArgs e)
@@ -77,7 +96,12 @@ namespace BMP_Stenography
                 string query = "INSERT INTO [image] (title, image,user_id) VALUES (@ImageName, @ImageData,@UserId)";
 
                 // Create a SqlConnection object to connect to the database
-                _conn.Open();
+                if (_conn.State != ConnectionState.Open)
+                {
+                   
+                        _conn.Open();
+                    
+                }
                 // Create a SqlCommand object to execute the query
                 SqlCommand command = new SqlCommand(query, _conn);
 
@@ -95,11 +119,17 @@ namespace BMP_Stenography
                 SqlParameter UserId = new SqlParameter("@UserId", SqlDbType.Int);
                 UserId.Value = _user.Id;
                 command.Parameters.Add(UserId);
-                _conn.Close();
+                if (_conn.State == ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
                 try
                 {
                     // Open the database connection
-                    _conn.Open();
+                    if (_conn.State != ConnectionState.Open)
+                    {
+                        _conn.Open();
+                    }
 
                     // Execute the query to insert the image into the table
                     command.ExecuteNonQuery();
@@ -113,7 +143,10 @@ namespace BMP_Stenography
                         // Set the Image property of the PictureBox control to the Image object
                         pictureBox.Image = image;
                     }
-                    _conn.Close();
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -123,7 +156,10 @@ namespace BMP_Stenography
                 finally
                 {
                     // Close the database connection
-                    _conn.Close();
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
                 }
 
                 try
@@ -134,9 +170,15 @@ namespace BMP_Stenography
                 catch (Exception)
                 {
                 }
-                finally { _conn.Close(); }
+                finally
+                {
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
+                }
 
-                
+
             }
         }
         private void createButton_Click(object sender, EventArgs e)
@@ -157,10 +199,16 @@ namespace BMP_Stenography
             // connection string to the MSSQL database
             string sqlQuery = "SELECT image FROM [image] WHERE Id = @Id;";
             ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
+            if (selectedComboItem!=null)
+            {
+
             int imageId = selectedComboItem.Id;
-            // create a new SQL connection and command objects
-            _conn.Open();
-            using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
+                // create a new SQL connection and command objects
+                if (_conn.State != ConnectionState.Open)
+                {
+                    _conn.Open();
+                }
+                using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
             {
                 // add the ID parameter to the command object
                 command.Parameters.AddWithValue("@Id", imageId);
@@ -174,7 +222,15 @@ namespace BMP_Stenography
                 // create a new memory stream and write the image data to it
                 string str = createNegativeImage(imageData);
                 LoadChangedImage(str);
-                _conn.Close();
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Add photo");
             }
         }
         private string createNegativeImage(byte[] inputFileData)
@@ -352,7 +408,10 @@ namespace BMP_Stenography
             // open the connection
             try
             {
-                _conn.Open();
+                if (_conn.State != ConnectionState.Open)
+                {
+                    _conn.Open();
+                }
                 byte[] imageData = (byte[])command.ExecuteScalar();
 
                 // close the connection
@@ -373,7 +432,10 @@ namespace BMP_Stenography
             }
             finally
             {
-                _conn.Close();
+                if (_conn.State == ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
             }
 
 
@@ -381,7 +443,10 @@ namespace BMP_Stenography
 
         private void UpdateImagePictureBox()
         {
-            _conn.Open();
+            if (_conn.State != ConnectionState.Open)
+            {
+                _conn.Open();
+            }
             // create a SqlCommand object with a SELECT statement
             SqlCommand command = new SqlCommand("SELECT Id FROM [image] WHERE user_id = @UserId", _conn);
 
@@ -411,7 +476,10 @@ namespace BMP_Stenography
             imageComboBox.DataSource = comboItems;
             // close the reader and the connection
             reader.Close();
-            _conn.Close();
+            if (_conn.State == ConnectionState.Open)
+            {
+                _conn.Close();
+            }
 
             ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
             if (selectedComboItem != null)
@@ -426,7 +494,10 @@ namespace BMP_Stenography
                 // open the connection
                 try
                 {
-                    _conn.Open();
+                    if (_conn.State != ConnectionState.Open)
+                    {
+                        _conn.Open();
+                    }
                     byte[] imageData = (byte[])command.ExecuteScalar();
 
                     // close the connection
@@ -441,14 +512,20 @@ namespace BMP_Stenography
                         // display the image in a PictureBox control
                         selectedPicture.Image = image;
                     }
-                    _conn.Close();
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
                 }
                 catch (Exception)
                 {
                 }
                 finally
                 {
-                    _conn.Close();
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
                 }
             }
         }
@@ -458,94 +535,151 @@ namespace BMP_Stenography
             string str = "";
             string sqlQuery = "SELECT image FROM [image] WHERE Id = @Id;";
             ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
-            int imageId = selectedComboItem.Id;
-            // create a new SQL connection and command objects
-            _conn.Open();
-            using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
+            if (selectedComboItem != null)
             {
-                // add the ID parameter to the command object
-                command.Parameters.AddWithValue("@Id", imageId);
 
-                // open the connection to the database
-
-
-                // execute the SQL command and retrieve the image data as a byte array
-                byte[] imageData = (byte[])command.ExecuteScalar();
-               str=  StoreMessageInBmp(imageData, messageTextbox.Text);
-
-                LoadChangedImage(str);
-                // create a new memory stream and write the image data to it
-
-                _conn.Close();
-            }
-
-
-
-
-            byte[] fileData = File.ReadAllBytes(str);
-
-            // Define the SQL query to insert the image into the table
-            string query = "INSERT INTO [image] (title, image,user_id) VALUES (@ImageName, @ImageData,@UserId)";
-
-            // Create a SqlConnection object to connect to the database
-            _conn.Open();
-            // Create a SqlCommand object to execute the query
-            SqlCommand commandd = new SqlCommand(query, _conn);
-
-            // Create a SqlParameter object for the image name parameter
-            SqlParameter imageNameParam = new SqlParameter("@ImageName", SqlDbType.VarChar);
-
-            imageNameParam.Value = $"Image - {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}.bmp";
-            commandd.Parameters.Add(imageNameParam);
-
-            // Create a SqlParameter object for the image data parameter
-            SqlParameter imageDataParam = new SqlParameter("@ImageData", SqlDbType.Image);
-            imageDataParam.Value = fileData;
-            commandd.Parameters.Add(imageDataParam);
-
-            SqlParameter UserId = new SqlParameter("@UserId", SqlDbType.Int);
-            UserId.Value = _user.Id;
-            commandd.Parameters.Add(UserId);
-            _conn.Close();
-            try
-            {
-                // Open the database connection
-                _conn.Open();
-
-                // Execute the query to insert the image into the table
-                commandd.ExecuteNonQuery();
-                // Display a success message
-                MessageBox.Show("Image saved successfully.");
-                using (MemoryStream ms = new MemoryStream(fileData))
+                int imageId = selectedComboItem.Id;
+                // create a new SQL connection and command objects
+                if (_conn.State != ConnectionState.Open)
                 {
-                    // Use the FromStream method of the Image class to create an Image object from the MemoryStream
-                    Image image = Image.FromStream(ms);
-
-                    // Set the Image property of the PictureBox control to the Image object
-                    pictureBox.Image = image;
+                    _conn.Open();
                 }
-                _conn.Close();
-            }
-            catch (Exception ex)
-            {
-                // Display an error message
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                // Close the database connection
-                _conn.Close();
-            }
+                using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
+                {
+                    // add the ID parameter to the command object
+                    command.Parameters.AddWithValue("@Id", imageId);
 
-            try
-            {
-                UpdateImagePictureBox();
+                    // open the connection to the database
 
+
+                    // execute the SQL command and retrieve the image data as a byte array
+                    byte[] imageData = (byte[])command.ExecuteScalar();
+                    str = StoreMessageInBmp(imageData, messageTextbox.Text);
+                    if (str == "error")
+                    {
+                        MessageBox.Show("Choose another file");
+                    }
+                    else
+                    {
+
+                    LoadChangedImage(str);
+                    }
+                    // create a new memory stream and write the image data to it
+
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
+                }
+
+
+
+                try
+                {
+                    byte[] fileData = File.ReadAllBytes(str) ?? null;
+
+                    // Define the SQL query to insert the image into the table
+                    string query = "INSERT INTO [image] (title, image,user_id) VALUES (@ImageName, @ImageData,@UserId)";
+
+                    // Create a SqlConnection object to connect to the database
+                    if (_conn.State != ConnectionState.Open)
+                    {
+                        _conn.Open();
+                    }
+                    // Create a SqlCommand object to execute the query
+                    SqlCommand commandd = new SqlCommand(query, _conn);
+
+                    // Create a SqlParameter object for the image name parameter
+                    SqlParameter imageNameParam = new SqlParameter("@ImageName", SqlDbType.VarChar);
+
+                    imageNameParam.Value = $"Image - {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}.bmp";
+                    commandd.Parameters.Add(imageNameParam);
+
+                    // Create a SqlParameter object for the image data parameter
+                    SqlParameter imageDataParam = new SqlParameter("@ImageData", SqlDbType.Image);
+                    imageDataParam.Value = fileData;
+                    commandd.Parameters.Add(imageDataParam);
+
+                    SqlParameter UserId = new SqlParameter("@UserId", SqlDbType.Int);
+                    UserId.Value = _user.Id;
+                    commandd.Parameters.Add(UserId);
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
+                    try
+                    {
+                        // Open the database connection
+                        if (_conn.State != ConnectionState.Open)
+                        {
+                            _conn.Open();
+                        }
+
+                        // Execute the query to insert the image into the table
+                        commandd.ExecuteNonQuery();
+                        // Display a success message
+                        MessageBox.Show("Image saved successfully.");
+                        using (MemoryStream ms = new MemoryStream(fileData))
+                        {
+                            // Use the FromStream method of the Image class to create an Image object from the MemoryStream
+                            Image image = Image.FromStream(ms);
+
+                            // Set the Image property of the PictureBox control to the Image object
+                            pictureBox.Image = image;
+                        }
+                        if (_conn.State == ConnectionState.Open)
+                        {
+                            _conn.Close();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Display an error message
+                        MessageBox.Show("Error: " + ex.Message);
+                    }
+                    finally
+                    {
+                        // Close the database connection
+                        if (_conn.State == ConnectionState.Open)
+                        {
+                            _conn.Close();
+                        }
+                    }
+
+                    try
+                    {
+                        UpdateImagePictureBox();
+
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    finally
+                    {
+                        if (_conn.State == ConnectionState.Open)
+                        {
+                            _conn.Close();
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+
+                    
+                }
+                finally 
+                {
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
+                }
+               
             }
-            catch (Exception)
+            else
             {
+                MessageBox.Show("Add photo");
             }
-            finally { _conn.Close(); }
         }
 
 
@@ -622,7 +756,16 @@ namespace BMP_Stenography
                         using (var outputMs = new MemoryStream())
                         {
                             bmp.Save(outputMs, ImageFormat.Bmp);
+                            try
+                            {
                             File.WriteAllBytes(saveDialog.FileName, outputMs.ToArray());
+
+                            }
+                            catch (Exception)
+                            {
+
+                                return "error";
+                            }
                         }
                     }
                     return saveDialog.FileName;
@@ -635,24 +778,38 @@ namespace BMP_Stenography
             string str = "";
             string sqlQuery = "SELECT image FROM [image] WHERE Id = @Id;";
             ComboItem selectedComboItem = (ComboItem)imageComboBox.SelectedItem;
-            int imageId = selectedComboItem.Id;
-            // create a new SQL connection and command objects
-            _conn.Open();
-            using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
+            if (selectedComboItem != null)
             {
-                // add the ID parameter to the command object
-                command.Parameters.AddWithValue("@Id", imageId);
 
-                // open the connection to the database
+                int imageId = selectedComboItem.Id;
+                // create a new SQL connection and command objects
+                if (_conn.State != ConnectionState.Open)
+                {
+                    _conn.Open();
+                }
+                using (SqlCommand command = new SqlCommand(sqlQuery, _conn))
+                {
+                    // add the ID parameter to the command object
+                    command.Parameters.AddWithValue("@Id", imageId);
+
+                    // open the connection to the database
 
 
-                // execute the SQL command and retrieve the image data as a byte array
-                byte[] imageData = (byte[])command.ExecuteScalar();
-                 ReadMessageFromBmp(imageData);
+                    // execute the SQL command and retrieve the image data as a byte array
+                    byte[] imageData = (byte[])command.ExecuteScalar();
+                    ReadMessageFromBmp(imageData);
 
-                // create a new memory stream and write the image data to it
+                    // create a new memory stream and write the image data to it
 
-                _conn.Close();
+                    if (_conn.State == ConnectionState.Open)
+                    {
+                        _conn.Close();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Add photo");
             }
         }
 
@@ -692,13 +849,9 @@ namespace BMP_Stenography
             // Remove the stop sequence from the binary message
             binaryMessage = binaryMessage.Substring(0, binaryMessage.Length - stopSequence.Length);
 
-            // Pad the binary message with zeroes to make its length a multiple of 8
             // It may contain additional zeroes at the end since we were adding 0 to bmp if binaryMessage was out of chars (line 60,61)
-            int paddingLength = 8 - binaryMessage.Length % 8;
-            for (int i = 0; i < paddingLength; i++)
-            {
-                binaryMessage += "0";
-            }
+            int paddingLength = binaryMessage.Length % 8;
+            binaryMessage = binaryMessage.Substring(0, binaryMessage.Length - paddingLength);
 
             // Convert the binary message to ASCII
             List<byte> messageBytes = new List<byte>();
@@ -707,11 +860,68 @@ namespace BMP_Stenography
                 string byteString = binaryMessage.Substring(i, 8);
                 messageBytes.Add(Convert.ToByte(byteString, 2));
             }
-            decodeTextBox.Text = Encoding.ASCII.GetString(messageBytes.ToArray());
+            if (messageBytes.Count == 0)
+            {
+                decodeTextBox.Text = "Message not found";
+            }
+            foreach (byte b in messageBytes)
+            {
+                if (b < '0')
+                {
+                    decodeTextBox.Text = "Message not found";
+                }
+            }
+            string message = Encoding.ASCII.GetString(messageBytes.ToArray());
 
             bmp.Dispose();
 
-            
+            decodeTextBox.Text = Encoding.ASCII.GetString(messageBytes.ToArray());
+
+
+        }
+
+        private void logOutButton_Click(object sender, EventArgs e)
+        {
+          
+            this.Close();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                if (_conn.State != ConnectionState.Open)
+                {
+                    _conn.Open();
+                }
+                string query = "Update [user] SET [template]=@template, [color]=@color where [id]=@id";
+                using (SqlCommand command = new SqlCommand(query, _conn))
+                {
+                    command.Parameters.AddWithValue("@id", _user.Id);
+                    command.Parameters.AddWithValue("@color", ((ComboItem)colorComboBox.SelectedItem).Id);
+                    command.Parameters.AddWithValue("@template", ((ComboItem)templateComboBox.SelectedItem).Id);
+                    command.ExecuteNonQuery();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Error:" + ex);
+            }
+            finally 
+            {
+                if (_conn.State == ConnectionState.Open)
+                {
+                    _conn.Close();
+                }
+            }
+        
+            DialogResult result = MessageBox.Show("Are you sure you want to close the window?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.No)
+            {
+                e.Cancel = true; // Cancel the closing event if the user chooses not to close
+            }
         }
     }
 }

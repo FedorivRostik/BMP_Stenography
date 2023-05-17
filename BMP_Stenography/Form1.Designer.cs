@@ -36,6 +36,7 @@
             this.loginButton = new System.Windows.Forms.Button();
             this.clearButton = new System.Windows.Forms.Button();
             this.exitButton = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -82,7 +83,6 @@
             this.loginTextBox.Name = "loginTextBox";
             this.loginTextBox.Size = new System.Drawing.Size(239, 29);
             this.loginTextBox.TabIndex = 3;
-            this.loginTextBox.Text = "Admin";
             // 
             // passwordTextBox
             // 
@@ -94,14 +94,13 @@
             this.passwordTextBox.Name = "passwordTextBox";
             this.passwordTextBox.Size = new System.Drawing.Size(239, 29);
             this.passwordTextBox.TabIndex = 4;
-            this.passwordTextBox.Text = "1Admin";
             // 
             // loginButton
             // 
             this.loginButton.BackColor = System.Drawing.Color.Brown;
             this.loginButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.loginButton.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.loginButton.Location = new System.Drawing.Point(444, 215);
+            this.loginButton.Location = new System.Drawing.Point(444, 227);
             this.loginButton.Name = "loginButton";
             this.loginButton.Size = new System.Drawing.Size(65, 30);
             this.loginButton.TabIndex = 5;
@@ -114,24 +113,38 @@
             this.clearButton.BackColor = System.Drawing.Color.Brown;
             this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.clearButton.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.clearButton.Location = new System.Drawing.Point(341, 215);
+            this.clearButton.Location = new System.Drawing.Point(341, 227);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(97, 30);
             this.clearButton.TabIndex = 6;
-            this.clearButton.Text = "Clear";
+            this.clearButton.Text = "Register";
             this.clearButton.UseVisualStyleBackColor = false;
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
             // exitButton
             // 
             this.exitButton.BackColor = System.Drawing.Color.Brown;
             this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exitButton.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.exitButton.Location = new System.Drawing.Point(270, 215);
+            this.exitButton.Location = new System.Drawing.Point(270, 227);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(65, 30);
             this.exitButton.TabIndex = 7;
             this.exitButton.Text = "Exit";
             this.exitButton.UseVisualStyleBackColor = false;
+            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.ForeColor = System.Drawing.Color.Brown;
+            this.checkBox1.Location = new System.Drawing.Point(407, 204);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(102, 17);
+            this.checkBox1.TabIndex = 8;
+            this.checkBox1.Text = "Show Password";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // LoginForm
             // 
@@ -139,6 +152,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.exitButton);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.loginButton);
@@ -147,6 +161,8 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "LoginForm";
             this.Text = "Login";
             this.ResumeLayout(false);
@@ -164,6 +180,7 @@
         private System.Windows.Forms.Button loginButton;
         private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.Button exitButton;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

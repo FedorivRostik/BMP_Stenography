@@ -45,6 +45,7 @@
             this.messageTextbox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.decodeButton = new System.Windows.Forms.Button();
+            this.logOutButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.createPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.selectedPicture)).BeginInit();
@@ -250,12 +251,26 @@
             this.decodeButton.UseVisualStyleBackColor = false;
             this.decodeButton.Click += new System.EventHandler(this.decodeButton_Click);
             // 
+            // logOutButton
+            // 
+            this.logOutButton.BackColor = System.Drawing.Color.Brown;
+            this.logOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.logOutButton.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.logOutButton.Location = new System.Drawing.Point(262, 309);
+            this.logOutButton.Name = "logOutButton";
+            this.logOutButton.Size = new System.Drawing.Size(79, 30);
+            this.logOutButton.TabIndex = 26;
+            this.logOutButton.Text = "Log out";
+            this.logOutButton.UseVisualStyleBackColor = false;
+            this.logOutButton.Click += new System.EventHandler(this.logOutButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(1186, 347);
+            this.Controls.Add(this.logOutButton);
             this.Controls.Add(this.decodeButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.messageTextbox);
@@ -273,8 +288,11 @@
             this.Controls.Add(this.createPictureBox);
             this.Controls.Add(this.uploadButton);
             this.Controls.Add(this.pictureBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "MainForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.createPictureBox)).EndInit();
@@ -303,5 +321,6 @@
         private System.Windows.Forms.TextBox messageTextbox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button decodeButton;
+        private System.Windows.Forms.Button logOutButton;
     }
 }
